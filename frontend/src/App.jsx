@@ -20,7 +20,7 @@ function App() {
       setTodos([...todos, response.data]);
       setNewTodo("");
     } catch (error) {
-      console.log("Error adding todo:", error);
+      console.log("Error adding todos:", error);
     }
   };
 
