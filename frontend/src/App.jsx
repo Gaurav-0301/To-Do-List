@@ -55,8 +55,7 @@ function App() {
       setTodos([...todos, newItem]);
       setTaskText("");
       setError("");
-    } catch (console.error();
-    ) {
+    } catch (error) {
       setError("Could not add task." ,error);
     }
   };
