@@ -7,15 +7,15 @@ function App() {
   const [searchQuery, setSearchQuery] = useState(""); 
   const [error, setError] = useState("");
 
-  // Important: No extra slashes at the end
+
   const API_URL = import.meta.env.VITE_API_URL;
   
-  // Debugging: Check your console to see if this is 'undefined'
+  
   console.log("Connected to:", API_URL);
 
   const getTodos = async (query = "") => {
     try {
-      // Fixed logic: Use /search if querying, else use base URL
+   
       const url = query ? `${API_URL}/search?q=${query}` : API_URL;
       const response = await fetch(url);
       
@@ -23,7 +23,7 @@ function App() {
       
       const data = await response.json();
       setTodos(data);
-      setError(""); // Clear error if successful
+      setError(""); l
     } catch (err) {
       setError("Backend connection failed..");
     }
@@ -62,7 +62,7 @@ function App() {
 
   const toggleComplete = async (id, currentStatus) => {
     try {
-      // Fixed: Removed extra '/api/todos' because it is already in API_URL
+    
       const response = await fetch(`${API_URL}/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -78,7 +78,7 @@ function App() {
 
   const handleDelete = async (id) => {
     try {
-      // Fixed: Removed extra '/api/todos'
+      
       const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
       if (response.ok) {
         setTodos(todos.filter((t) => t._id !== id));
