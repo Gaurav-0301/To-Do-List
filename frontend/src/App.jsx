@@ -10,12 +10,12 @@ function App() {
 
   const API_URL = import.meta.env.VITE_API_URL;
   
-  
+
   console.log("Connected to:", API_URL);
 
   const getTodos = async (query = "") => {
     try {
-   
+      
       const url = query ? `${API_URL}/search?q=${query}` : API_URL;
       const response = await fetch(url);
       
@@ -23,7 +23,7 @@ function App() {
       
       const data = await response.json();
       setTodos(data);
-      setError(""); l
+      setError(""); 
     } catch (err) {
       setError("Backend connection failed..");
     }
@@ -62,7 +62,7 @@ function App() {
 
   const toggleComplete = async (id, currentStatus) => {
     try {
-    
+     
       const response = await fetch(`${API_URL}/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -78,7 +78,7 @@ function App() {
 
   const handleDelete = async (id) => {
     try {
-      
+     
       const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
       if (response.ok) {
         setTodos(todos.filter((t) => t._id !== id));
