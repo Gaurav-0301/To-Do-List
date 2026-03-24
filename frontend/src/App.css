@@ -1,0 +1,44 @@
+.container {
+  width: 350px;
+  margin: 50px auto;
+  font-family: Arial;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+button {
+  padding: 8px;
+  background: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.del-btn {
+  background: #dc3545;
+  padding: 2px 8px;
+}
