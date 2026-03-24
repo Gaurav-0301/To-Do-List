@@ -50,12 +50,23 @@ const deleteTodo= async (req, res) => {
   }
 }
 
-export const searchTodos = async (req, res) => {
-    try {
-        const results = await todoService.findTodosByQuery(req.query.q);
-        res.status(200).json(results);
-    } catch (error) {
-        res.status(500).json({ message: "Error searching tasks" });
+
+ const searchTodos = async (req, res) => {
+  try {
+    const { q } = req.query; //
+    
+    if (!q) {
+      return res.status(400).json({ message: "Search query is required" });
     }
+
+    
+    const results = await Todo.find({
+      text: { $regex: q, $options: "i" }
+    });
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Error searching tasks", error: error.message });
+  }
 };
 module.exports={getTodos,newTodo,updateTodo,deleteTodo,searchTodos}
