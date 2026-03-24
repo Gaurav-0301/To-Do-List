@@ -7,67 +7,84 @@ function App() {
   const [searchQuery, setSearchQuery] = useState(""); 
   const [error, setError] = useState("");
 
-  
+  // Important: No extra slashes at the end
   const API_URL = import.meta.env.VITE_API_URL;
-
   
+  // Debugging: Check your console to see if this is 'undefined'
+  console.log("Connected to:", API_URL);
+
   const getTodos = async (query = "") => {
     try {
-      
+      // Fixed logic: Use /search if querying, else use base URL
       const url = query ? `${API_URL}/search?q=${query}` : API_URL;
       const response = await fetch(url);
+      
+      if (!response.ok) throw new Error("Failed to fetch");
+      
       const data = await response.json();
       setTodos(data);
+      setError(""); // Clear error if successful
     } catch (err) {
-      setError("Server is not responding. Check your backend!");
+      setError("Backend connection failed..");
     }
   };
 
   useEffect(() => {
-    getTodos();
+    if (API_URL) {
+      getTodos();
+    } else {
+      setError("VITE_API_URL is missing in .env file");
+    }
   }, []);
-
 
   const handleAdd = async (e) => {
     e.preventDefault();
     if (taskText.trim() === "") {
-      setError("Task cannot be empty!");
+      setError("Please enter a task name.");
       return;
     }
 
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: taskText }), 
-    });
+    try {
+      const response = await fetch(`${API_URL}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: taskText }), 
+      });
 
-    if (response.ok) {
       const newItem = await response.json();
       setTodos([...todos, newItem]);
       setTaskText("");
       setError("");
+    } catch (err) {
+      setError("Could not add task.");
     }
   };
-
 
   const toggleComplete = async (id, currentStatus) => {
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: !currentStatus }),
-    });
+    try {
+      // Fixed: Removed extra '/api/todos' because it is already in API_URL
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: !currentStatus }),
+      });
 
-    if (response.ok) {
       const updated = await response.json();
       setTodos(todos.map((t) => (t._id === id ? updated : t)));
+    } catch (err) {
+      setError("Update failed.");
     }
   };
 
-
   const handleDelete = async (id) => {
-    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    if (response.ok) {
-      setTodos(todos.filter((t) => t._id !== id));
+    try {
+      // Fixed: Removed extra '/api/todos'
+      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      if (response.ok) {
+        setTodos(todos.filter((t) => t._id !== id));
+      }
+    } catch (err) {
+      setError("Delete failed.");
     }
   };
 
@@ -75,11 +92,10 @@ function App() {
     <div className="container">
       <h1>Task Manager</h1>
 
-  
       <div className="row">
         <input 
           type="text" 
-          placeholder="Search your tasks..." 
+          placeholder="Search..." 
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
@@ -88,18 +104,17 @@ function App() {
         />
       </div>
 
-
       <form onSubmit={handleAdd} className="row">
         <input 
           type="text" 
           value={taskText} 
-          placeholder="Add a new task" 
+          placeholder="What needs to be done?" 
           onChange={(e) => setTaskText(e.target.value)} 
         />
-        <button type="submit">Add</button>
+        <button type="submit">Add Task</button>
       </form>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error-box">{error}</p>}
 
       <div className="list">
         {todos.length > 0 ? (
@@ -107,7 +122,7 @@ function App() {
             <div key={todo._id} className="item">
               <span 
                 onClick={() => toggleComplete(todo._id, todo.completed)}
-                className={todo.completed ? "completed" : ""}
+                className={todo.completed ? "completed" : "pending"}
               >
                 {todo.text}
               </span>
@@ -115,7 +130,7 @@ function App() {
             </div>
           ))
         ) : (
-          <p className="no-tasks">No tasks found.</p>
+          <p className="empty-msg">No tasks found.</p>
         )}
       </div>
     </div>
